@@ -20,10 +20,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser()); //  must come before routes
 
-// const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",") : ["http://localhost:5173"];
+// Allowed origins for CORS, default to localhost and Vercel URL if not set
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",")
+  : ["http://localhost:5173", "https://e-phone-store-six.vercel.app"];
+
 app.use(
   cors({
-    origin: "http://localhost:5173", ////// frontend URL
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   })
