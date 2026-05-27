@@ -5,7 +5,7 @@ import { server } from "./src/config/index.js";
 
 // const PORT = server.port || 443;
 
-const PORT = 4000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 if (process.env.NODE_ENV === "development") {
   const httpsOptions = {
