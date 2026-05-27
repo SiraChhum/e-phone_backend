@@ -46,8 +46,15 @@ app.use("/api/carts", cartRoutes)
 app.use("/api/image", imageRoutes);
 
 // Root route
+// app.get("/", (req, res) => {
+//   res.status(StatusCodes.OK).json({
+//     message: "API E-Store is running",
+//     version: "1.0.0",
+//   });
+// });
 app.get("/", (req, res) => {
-  res.status(StatusCodes.OK).json({
+  res.json({
+    success: true,
     message: "API E-Store is running",
     version: "1.0.0",
   });
