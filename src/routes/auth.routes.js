@@ -52,7 +52,7 @@ const upload = multer({
 
 // ✅ Routes
 router.post("/login", validate(loginSchema), login);
-router.post("/create", authMiddleware, upload, createUser);
+router.post("/create", upload, createUser);
 router.post("/delete", authMiddleware, isAdmin, deleteUser);
 router.post("/get", authMiddleware, isAdmin, getUsers);
 router.post("/lists", authMiddleware, isAdmin, listUsers);
