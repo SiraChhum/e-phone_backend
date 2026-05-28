@@ -64,7 +64,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// Not found middleware
 app.use((req, res) => {
   res.status(StatusCodes.NOT_FOUND).json({
     message: "Resource not found",
