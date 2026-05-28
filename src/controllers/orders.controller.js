@@ -87,7 +87,7 @@ export const listOrderAndItems = asyncHandler(async (req, res) => {
       {
         model: OrderItems,
         as: 'order_items', //  must match .hasMany(orderItems, { as: 'order_items' })
-        attributes: ["product_id", "quantity", "price", "subtotal"],
+        attributes: ["product_id", "qty", "price", "subtotal"],
         include: [
           {
             model: Products,
@@ -120,7 +120,7 @@ export const DetailListOrderAndItems = asyncHandler(async (req, res) => {
       {
         model: OrderItems,
         as: 'order_items', // 👈 must match .hasMany(orderItems, { as: 'order_items' })
-        attributes: ['product_id', 'quantity', 'price', 'subtotal'],
+        attributes: ['product_id', 'qty', 'price', 'subtotal'],
         include: [
           {
             model: Products,
