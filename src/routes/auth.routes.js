@@ -54,8 +54,8 @@ const upload = multer({
 router.post("/login", validate(loginSchema), login);
 router.post("/create", upload, createUser);
 router.post("/delete", authMiddleware, isAdmin, deleteUser);
-router.post("/get", authMiddleware, isAdmin, getUsers);
-router.post("/lists", authMiddleware, isAdmin, listUsers);
+router.post("/get", getUsers);
+router.post("/lists", listUsers);
 router.post("/update", authMiddleware, isAdmin, upload, updateUser);
 
 // ✅ Google OAuth routes
