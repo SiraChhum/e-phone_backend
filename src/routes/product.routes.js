@@ -17,21 +17,6 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-//  Multer Storage Configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../uploads/products")); // use absolute path
-  },
-  filename: function (req, file, cb) {
-    const uniqueName = Date.now() + path.extname(file.originalname);
-    cb(null, uniqueName);
-  },
-});
-const uploadDir = path.join(__dirname, "../uploads/products");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
 //  File Filter (optional: only allow image types)
 const fileFilter = (req, file, cb) => {
   const allowed = /jpeg|jpg|png|gif/;
@@ -43,7 +28,8 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-//  Initialize upload middleware with file size limit (1MB)
+//  Multer Storage Configuration
+const storage = multer.memoryStorage(); // store files in memory for Cloudinary upload
 const upload = multer({
   storage,
   fileFilter,
