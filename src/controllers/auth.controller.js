@@ -15,7 +15,7 @@ const oauth2Client = new OAuth2Client(
 
 //  Get logged-in user info
 export const me = asyncHandler(async (req, res) => {
-  const id = req.id; // from auth middleware
+  const id = req.user?.id; // from auth middleware
 
   if (!id) {
     return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
@@ -46,7 +46,7 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   // generate token
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
+  const token = jwt.sign({ id: user.user_id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1d" });
   console.log("Generated Token:", token); // Debugging log
 
   res
@@ -214,13 +214,49 @@ export const googleAuthCallback = asyncHandler(async (req, res) => {
     { expiresIn: "1d" }
   );
 
-  // Set cookie and redirect to frontend
-  res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
-      maxAge: 86400000, // 1 day
-    })
-    .redirect(`${process.env.WEB_URL}?token=${token}`);
+  // Set cookie and redirect/respond
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Lax",
+    maxAge: 86400000, // 1 day
+  });
+
+  if (req.xhr || req.headers.accept?.includes("json") || req.query.json === "true") {
+    return res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Google authentication successful",
+      user,
+      token,
+      needsPassword: !user.password
+    });
+  }
+
+  res.redirect(`${process.env.WEB_URL}?token=${token}`);
+});
+
+// Set Password (for users who registered via Google without a password)
+export const setPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const id = req.user?.id; // from authMiddleware
+
+  if (!id) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ error: "Unauthorized" });
+  }
+
+  if (!password || password.length < 6) {
+    return errorResponse(res, "Password must be at least 6 characters long", StatusCodes.BAD_REQUEST);
+  }
+
+  const user = await Users.findByPk(id);
+  if (!user) {
+    return errorResponse(res, "User not found", StatusCodes.NOT_FOUND);
+  }
+
+  // Hash new password
+  const hashedPassword = await bcrypt.hash(password, 10);
+  user.password = hashedPassword;
+  await user.save();
+
+  return successResponse(res, null, "Password set successfully");
 });

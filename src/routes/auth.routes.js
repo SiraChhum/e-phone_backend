@@ -8,7 +8,7 @@ import { validate } from "../middlewares/validate.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { loginSchema } from "../schemas/auth.schema.js";
 import { isAdmin } from "../middlewares/isAdmin.middleware.js";
-import { login, me, deleteUser, getUsers, listUsers, createUser, updateUser, googleAuthRedirect, googleAuthCallback } from "../controllers/auth.controller.js";
+import { login, me, deleteUser, getUsers, listUsers, createUser, updateUser, googleAuthRedirect, googleAuthCallback, setPassword } from "../controllers/auth.controller.js";
 
 // Setup router
 const router = express.Router();
@@ -52,6 +52,7 @@ const upload = multer({
 
 // ✅ Routes
 router.post("/login", validate(loginSchema), login);
+router.get("/me", authMiddleware, me);
 router.post("/create", upload, createUser);
 router.post("/delete", authMiddleware, isAdmin, deleteUser);
 router.post("/get", getUsers);
@@ -61,5 +62,6 @@ router.post("/update", authMiddleware, isAdmin, upload, updateUser);
 // ✅ Google OAuth routes
 router.get("/google", googleAuthRedirect);
 router.get("/google/callback", googleAuthCallback);
+router.post("/set-password", authMiddleware, setPassword);
 
 export default router;

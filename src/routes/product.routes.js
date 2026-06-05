@@ -8,7 +8,7 @@ import { validate } from "../middlewares/validate.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { loginSchema } from "../schemas/auth.schema.js";
 import { isAdmin } from "../middlewares/isAdmin.middleware.js";
-import { listProduct, createProduct } from "../controllers/product.controller.js";
+import { listProduct, createProduct, updateProduct, deleteProduct } from "../controllers/product.controller.js";
 
 // Setup router
 const router = express.Router();
@@ -40,5 +40,6 @@ const upload = multer({
 
 router.post("/lists",  listProduct);
 router.post("/create", authMiddleware, isAdmin, upload, createProduct);
-
+router.post("/edit", authMiddleware, isAdmin, upload, updateProduct);
+router.post("/delete", authMiddleware, isAdmin, deleteProduct);
 export default router;

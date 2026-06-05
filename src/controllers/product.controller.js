@@ -68,3 +68,52 @@ export const createProduct = asyncHandler( async (req, res) => {
     });
     return successResponse(res, product, "Product created successfully");
 })
+
+export const updateProduct = asyncHandler( async (req, res) => {
+    const { name, description, price, discount_price, stock, ram, storage, color, status } = req.body;
+    // Prepare update fields
+    const updateFields = {
+        name,
+        category_id: req.body.category_id,
+        brand_id: req.body.brand_id,
+        description,
+        price,
+        discount_price,
+        stock,
+        ram,
+        storage,
+        color,
+        status,
+    };
+    // If a new image file is provided, upload to Cloudinary
+    if (req.file) {
+        const uploadToCloudinary = () => new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream({ folder: "products" }, (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            });
+            stream.end(req.file.buffer);
+        });
+        try {
+            const uploadResult = await uploadToCloudinary();
+            updateFields.image = uploadResult.secure_url;
+        } catch (err) {
+            console.error("Cloudinary upload failed", err);
+            return errorResponse(res, "Failed to upload image", StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+    const product = await Products.update(updateFields, {
+        where: { product_id: req.body.product_id },
+    });
+    return successResponse(res, product, "Product updated successfully");
+});
+
+
+export const deleteProduct = asyncHandler( async (req, res) => {
+    const product = await Products.destroy({
+        where: {
+            product_id: req.body.product_id,
+        },
+    });
+    return successResponse(res, product, "Product deleted successfully");
+})
