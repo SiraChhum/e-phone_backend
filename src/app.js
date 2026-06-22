@@ -23,7 +23,7 @@ app.use(cookieParser()); //  must come before routes
 // Allowed origins for CORS, default to localhost and Vercel URL if not set
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",")
-  : ["http://localhost:5173", "https://e-phone-store-six.vercel.app"];
+  : ["http://localhost:8000", "https://e-phone-store-six.vercel.app"];
 
 app.use(
   cors({
